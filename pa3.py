@@ -22,6 +22,12 @@ def solve(filename):
         print(f"Case {case}:")
 
         # TODO: do some preprocessing here
+        stone_locs = []
+        for _ in range(n):
+            stone_loc = f.readline().strip().split()
+            i = int(stone_loc[0]) - int(stone_loc[1])
+            j = int(stone_loc[0]) + int(stone_loc[1])
+            stone_locs.append((i,j))
 
         # Handle queries
         for _ in range(q):
