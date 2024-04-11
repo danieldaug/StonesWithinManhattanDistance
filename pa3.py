@@ -65,10 +65,24 @@ def solve(filename):
         
         # Handle queries
         for _ in range(q):
+
             query = int(f.readline().strip())
-            best_count, best_loc = 0, (None, None) # TODO: change this
-            
-            # TODO: for each query, find the max count of points here
+            best_count = 0
+            best_loc = (0,0)
+            #look through each square in count table grid
+            for r in range(query, len(memo)):
+                for c in range(query, len(memo[r])):
+                    #compute desired square
+                    total_square = memo[r][c]
+                    left_rect = memo[r-query][c]
+                    right_rect = memo[r][c-query]
+                    smaller_square = memo[r-query][c-query]
+                    #replace values if larger count found
+                    if best_count < (total_square-right_rect-left_rect+smaller_square):
+                        best_count = (total_square-right_rect-left_rect+smaller_square)
+                        best_loc = (r-query//2, c-query//2)
+
+
                     
             print(f"{best_count} ({best_loc[0]},{best_loc[1]})")
 
