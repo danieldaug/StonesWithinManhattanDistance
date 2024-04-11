@@ -62,7 +62,17 @@ def solve(filename):
                 i += 1
             if j < nc+nr+j_offset-1:
                 j += 1
-        
+        if j < len(memo) and memo[i-1][j] == 0:
+                memo[i-1][j] = memo[i-1][j-1]
+                for p in range(i-1):
+                    memo[i-1][j] += stone_grid[i-1-p][j]
+        if i < len(memo) and memo[i][j-1] == 0:
+                    memo[i][j-1] = memo[i-1][j-1]
+                    for p in range(j-1):
+                        memo[i][j-1] += stone_grid[i][j-1-p]
+
+
+        print(memo)
         # Handle queries
         for _ in range(q):
 
@@ -70,6 +80,7 @@ def solve(filename):
             best_count = 0
             best_loc = (0,0)
             #look through each square in count table grid
+            #figure out what the length sides of the square are
             for r in range(query, len(memo)):
                 for c in range(query, len(memo[r])):
                     #compute desired square
@@ -80,6 +91,7 @@ def solve(filename):
                     #replace values if larger count found
                     if best_count < (total_square-right_rect-left_rect+smaller_square):
                         best_count = (total_square-right_rect-left_rect+smaller_square)
+                        #need to translate back to (r,c)
                         best_loc = (r-query//2, c-query//2)
 
 
