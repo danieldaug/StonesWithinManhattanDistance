@@ -92,7 +92,7 @@ def solve(filename):
                     if best_count < (total_square-right_rect-left_rect+smaller_square):
                         best_count = (total_square-right_rect-left_rect+smaller_square)
                         #need to translate back to (r,c)
-                        best_loc = (r-query//2, c-query//2)
+                        best_loc = (((r-query//2) + (c-query//2))*2, ((c-query//2) - (r-query//2))*2)
 
 
                     
