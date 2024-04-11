@@ -36,31 +36,33 @@ def solve(filename):
         memo = [[0]*((nc-1)+i_offset)] * ((nc + nr) + j_offset)
         i = 0
         j = 0
-        #not sure how to know when to end
-        while (i,j) != (nc,nc+nr+1):
+
+        while (i < nc-1+i_offset-1 or j < nc+nr+j_offset-1):
             #base case: check if stone is in bottom left corner
             if (i,j) == (0,0):
                 if stone_grid[0][0] == 1:
                     memo[0][0] = 1
             else:
                 #make upward rectangle (in graph view) by taking smaller square plus row of squares above
-                memo[i-1][j] = memo[i-1][j-1]
-                for p in range(i-1):
-                    memo[i-1][j] += stone_grid[i-1-p][j]
+                if memo[i-1][j] == 0:
+                    memo[i-1][j] = memo[i-1][j-1]
+                    for p in range(i-1):
+                        memo[i-1][j] += stone_grid[i-1-p][j]
                 
                 #make sideways rectangle (in graph view) by taking smaller square plus column of squares to the right
-                memo[i][j-1] = memo[i-1][j-1]
-                for p in range(j-1):
-                    memo[i][j-1] += stone_grid[i][j-1-p]
+                if memo[i][j-1] == 0:
+                    memo[i][j-1] = memo[i-1][j-1]
+                    for p in range(j-1):
+                        memo[i][j-1] += stone_grid[i][j-1-p]
                 
                 #compute larger square with rectangles and getting rid of duplicates + plus top right corner
                 memo[i][j] = memo[i-1][j] + memo[i][j-1] - memo[i-1][j-1] + stone_grid[i][j]
-                
-
-            i += 1
-            j += 1
             
-            
+            if i < nc-1+i_offset-1:
+                i += 1
+            if j < nc+nr+j_offset-1:
+                j += 1
+        
         # Handle queries
         for _ in range(q):
             query = int(f.readline().strip())
