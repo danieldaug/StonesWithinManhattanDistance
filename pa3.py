@@ -37,42 +37,47 @@ def solve(filename):
         i = 0
         j = 0
 
-        while (i < nc-1+i_offset-1 or j < nc+nr+j_offset-1):
+        while (i < nc-1+i_offset):
             #base case: check if stone is in bottom left corner
             if (i,j) == (0,0):
                 if stone_grid[0][0] == 1:
                     memo[0][0] = 1
             else:
                 #make upward rectangle (in graph view) by taking smaller square plus row of squares above
-                if memo[i-1][j] == 0:
+                if i > 0 and memo[i-1][j] == 0:
                     memo[i-1][j] = memo[i-1][j-1]
                     for p in range(i-1):
                         memo[i-1][j] += stone_grid[i-1-p][j]
                 
                 #make sideways rectangle (in graph view) by taking smaller square plus column of squares to the right
-                if memo[i][j-1] == 0:
+                if j > 0 and memo[i][j-1] == 0:
                     memo[i][j-1] = memo[i-1][j-1]
                     for p in range(j-1):
                         memo[i][j-1] += stone_grid[i][j-1-p]
                 
                 #compute larger square with rectangles and getting rid of duplicates + plus top right corner
-                memo[i][j] = memo[i-1][j] + memo[i][j-1] - memo[i-1][j-1] + stone_grid[i][j]
+                if i>0:
+                    a = memo[i-1][j]
+                else:
+                    a = 0
+                if j>0:
+                    b = memo[i][j-1]
+                else:
+                    b = 0
+                if i>0 and j>0:
+                    c = memo[i-1][j-1]
+                else:
+                    c = 0
+                memo[i][j] = a + b - c + stone_grid[i][j]
             
-            if i < nc-1+i_offset-1:
+            #iterate
+            j += 1
+            if j >= (nc + nr) + j_offset:
+                j = 0
                 i += 1
-            if j < nc+nr+j_offset-1:
-                j += 1
-        if j < len(memo) and memo[i-1][j] == 0:
-                memo[i-1][j] = memo[i-1][j-1]
-                for p in range(i-1):
-                    memo[i-1][j] += stone_grid[i-1-p][j]
-        if i < len(memo) and memo[i][j-1] == 0:
-                    memo[i][j-1] = memo[i-1][j-1]
-                    for p in range(j-1):
-                        memo[i][j-1] += stone_grid[i][j-1-p]
 
 
-        print(memo)
+        #print(memo)
         # Handle queries
         for _ in range(q):
 
@@ -81,18 +86,19 @@ def solve(filename):
             best_loc = (0,0)
             #look through each square in count table grid
             #figure out what the length sides of the square are
-            for r in range(query, len(memo)):
-                for c in range(query, len(memo[r])):
+            for r in range(query*2, len(memo)):
+                for c in range(query*2, len(memo[r])):
                     #compute desired square
                     total_square = memo[r][c]
-                    left_rect = memo[r-query][c]
-                    right_rect = memo[r][c-query]
-                    smaller_square = memo[r-query][c-query]
+                    left_rect = memo[r-query*2][c]
+                    right_rect = memo[r][c-query*2]
+                    smaller_square = memo[r-query*2][c-query*2]
+                    #print(str(total_square)+" "+str(left_rect)+" "+str(right_rect)+" "+str(smaller_square))
                     #replace values if larger count found
                     if best_count < (total_square-right_rect-left_rect+smaller_square):
                         best_count = (total_square-right_rect-left_rect+smaller_square)
                         #need to translate back to (r,c)
-                        best_loc = (((r-query//2) + (c-query//2))*2, ((c-query//2) - (r-query//2))*2)
+                        best_loc = (((r-query) + (c-query))*2, ((c-query) - (r-query))*2)
 
 
                     
