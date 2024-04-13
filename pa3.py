@@ -1,8 +1,8 @@
 # File: pa3.py
-# Author:    
-# Date: 
+# Author: Daniel Daugbjerg and Evan Scott
+# Date: April 12, 2024
 # Description: 
-
+import math
 def solve(filename):
     """
     TODO: Write your docstring here (and for any other helper functions!)
@@ -22,7 +22,7 @@ def solve(filename):
         print(f"Case {case}:")
 
         # TODO: do some preprocessing here
-        stone_grid = [[0]*1000]*1000
+        stone_grid = [[0]*1000 for _ in range(1000)]
         i_offset = nr - 1
         j_offset = -2
         #read in stone locations and store on grid
@@ -33,51 +33,23 @@ def solve(filename):
             stone_grid[i+i_offset][j+j_offset] = 1
 
         #create memoization count table
-        memo = [[0]*((nc-1)+i_offset)] * ((nc + nr) + j_offset)
-        i = 0
-        j = 0
-
-        while (i < nc-1+i_offset):
-            #base case: check if stone is in bottom left corner
-            if (i,j) == (0,0):
-                if stone_grid[0][0] == 1:
-                    memo[0][0] = 1
-            else:
-                #make upward rectangle (in graph view) by taking smaller square plus row of squares above
-                if i > 0 and memo[i-1][j] == 0:
-                    memo[i-1][j] = memo[i-1][j-1]
-                    for p in range(i-1):
-                        memo[i-1][j] += stone_grid[i-1-p][j]
-                
-                #make sideways rectangle (in graph view) by taking smaller square plus column of squares to the right
-                if j > 0 and memo[i][j-1] == 0:
-                    memo[i][j-1] = memo[i-1][j-1]
-                    for p in range(j-1):
-                        memo[i][j-1] += stone_grid[i][j-1-p]
-                
+        memo = [[0 for _ in range((nc-1)+i_offset+1)] for _ in range((nc + nr) + j_offset+1)]
+       
+        for i in range(nc-1+i_offset+1):
+            for j in range((nc + nr) + j_offset+1):
+                #base case: check if stone is in bottom left corner
+                if i == 0 and j == 0:
+                    memo[i][j] = stone_grid[i][j]
+                elif i == 0:
+                    memo[i][j] = stone_grid[i][j] + memo[i][j - 1]
+                elif j == 0:
+                    memo[i][j] = stone_grid[i][j] + memo[i - 1][j]
                 #compute larger square with rectangles and getting rid of duplicates + plus top right corner
-                if i>0:
-                    a = memo[i-1][j]
                 else:
-                    a = 0
-                if j>0:
-                    b = memo[i][j-1]
-                else:
-                    b = 0
-                if i>0 and j>0:
-                    c = memo[i-1][j-1]
-                else:
-                    c = 0
-                memo[i][j] = a + b - c + stone_grid[i][j]
-            
-            #iterate
-            j += 1
-            if j >= (nc + nr) + j_offset:
-                j = 0
-                i += 1
+                    memo[i][j] = stone_grid[i][j] + memo[i - 1][j] + memo[i][j - 1] - memo[i - 1][j - 1]
 
-
-        #print(memo)
+        #for i in memo:
+            #print(i)
         # Handle queries
         for _ in range(q):
 
@@ -98,7 +70,11 @@ def solve(filename):
                     if best_count < (total_square-right_rect-left_rect+smaller_square):
                         best_count = (total_square-right_rect-left_rect+smaller_square)
                         #need to translate back to (r,c)
-                        best_loc = (((r-query) + (c-query))*2, ((c-query) - (r-query))*2)
+                        r_translated = r-i_offset
+                        c_translated = c-j_offset
+                        x = math.ceil((r_translated+c_translated)//2)
+                        y = (r_translated-c_translated)//-2
+                        best_loc = (x,y)
 
 
                     
