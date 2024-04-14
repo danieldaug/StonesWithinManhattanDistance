@@ -58,22 +58,31 @@ def solve(filename):
             best_loc = (0,0)
             #look through each square in count table grid
             #figure out what the length sides of the square are
-            for r in range(query*2, len(memo)):
-                for c in range(query*2, len(memo[r])):
+            for r in range(len(memo)):
+                for c in range(len(memo[r])):
                     #compute desired square
                     total_square = memo[r][c]
-                    left_rect = memo[r-query*2][c]
-                    right_rect = memo[r][c-query*2]
-                    smaller_square = memo[r-query*2][c-query*2]
+                    if r >= query*2:
+                        left_rect = memo[r-query*2][c]
+                    else:
+                        left_rect = 0
+                    if c >= query*2:
+                        right_rect = memo[r][c-query*2]
+                    else:
+                        right_rect = 0
+                    if r >= query*2 and c >= query*2:
+                        smaller_square = memo[r-query*2][c-query*2]
+                    else:
+                        smaller_square = 0
                     #print(str(total_square)+" "+str(left_rect)+" "+str(right_rect)+" "+str(smaller_square))
                     #replace values if larger count found
-                    if best_count < (total_square-right_rect-left_rect+smaller_square):
+                    if best_count <= (total_square-right_rect-left_rect+smaller_square):
                         best_count = (total_square-right_rect-left_rect+smaller_square)
                         #need to translate back to (r,c)
-                        r_translated = r-i_offset
-                        c_translated = c-j_offset
-                        x = math.ceil((r_translated+c_translated)//2)
-                        y = (r_translated-c_translated)//-2
+                        r_translated = r-i_offset-query
+                        c_translated = c-j_offset-query
+                        y = (r_translated+c_translated)//2
+                        x = (r_translated-c_translated)//-2
                         best_loc = (x,y)
 
 
