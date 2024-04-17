@@ -22,9 +22,9 @@ def solve(filename):
         print(f"Case {case}:")
 
         # TODO: do some preprocessing here
-        stone_grid = [[0]*1000 for _ in range(1000)]
         i_offset = nr - 1
         j_offset = -2
+        stone_grid = [[0 for _ in range(2000)] for _ in range(2000)]
         #read in stone locations and store on grid
         for _ in range(n):
             stone_loc = f.readline().strip().split()
@@ -33,10 +33,10 @@ def solve(filename):
             stone_grid[i+i_offset][j+j_offset] = 1
 
         #create memoization count table
-        memo = [[0 for _ in range((nc-1)+i_offset)] for _ in range((nc + nr) + j_offset)]
+        memo = [[0 for _ in range((nc-1)+i_offset+1)] for _ in range((nc + nr) + j_offset+1)]
        
-        for i in range(nc-1+i_offset):
-            for j in range((nc + nr) + j_offset):
+        for i in range(nc-1+i_offset+1):
+            for j in range((nc + nr) + j_offset+1):
                 #base case: check if stone is in bottom left corner
                 if i == 0 and j == 0:
                     memo[i][j] = stone_grid[i][j]
@@ -62,27 +62,28 @@ def solve(filename):
                 for c in range(len(memo[r])):
                     #compute desired square
                     total_square = memo[r][c]
-                    if r >= query*2:
-                        left_rect = memo[r-query*2][c]
+                    if r >= query*2-1:
+                        left_rect = memo[r-query*2-1][c]
                     else:
                         left_rect = 0
-                    if c >= query*2:
-                        right_rect = memo[r][c-query*2]
+                    if c >= query*2-1:
+                        right_rect = memo[r][c-query*2-1]
                     else:
                         right_rect = 0
-                    if r >= query*2 and c >= query*2:
-                        smaller_square = memo[r-query*2][c-query*2]
+                    if r >= query*2-1 and c >= query*2-1:
+                        smaller_square = memo[r-query*2-1][c-query*2-1]
                     else:
                         smaller_square = 0
                     #print(str(total_square)+" "+str(left_rect)+" "+str(right_rect)+" "+str(smaller_square))
                     #replace values if larger count found
-                    if best_count <= (total_square-right_rect-left_rect+smaller_square):
+                    if best_count < (total_square-right_rect-left_rect+smaller_square):
                         best_count = (total_square-right_rect-left_rect+smaller_square)
                         #need to translate back to (r,c)
                         r_translated = r-i_offset-query
                         c_translated = c-j_offset-query
-                        y = (r_translated+c_translated)//2
-                        x = (r_translated-c_translated)//-2
+                        y = abs((r_translated+c_translated)//2)
+                        x = abs((r_translated-c_translated)//-2)
+                        #print(str(total_square)+" "+str(left_rect)+" "+str(right_rect)+" "+str(smaller_square))
                         best_loc = (x,y)
 
 
