@@ -33,10 +33,10 @@ def solve(filename):
             stone_grid[i+i_offset][j+j_offset] = 1
 
         #create memoization count table
-        memo = [[0 for _ in range((nc-1)+i_offset+1)] for _ in range((nc + nr) + j_offset+1)]
+        memo = [[0 for _ in range((nc-1)+i_offset)] for _ in range((nc + nr) + j_offset)]
        
-        for i in range(nc-1+i_offset+1):
-            for j in range((nc + nr) + j_offset+1):
+        for i in range(nc-1+i_offset):
+            for j in range((nc + nr) + j_offset):
                 #base case: check if stone is in bottom left corner
                 if i == 0 and j == 0:
                     memo[i][j] = stone_grid[i][j]
