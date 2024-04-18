@@ -21,7 +21,6 @@ def solve(filename):
         case += 1
         print(f"Case {case}:")
 
-        # TODO: do some preprocessing here
         i_offset = nr - 1
         j_offset = -2
         stone_grid = [[0 for _ in range(2000)] for _ in range(2000)]
@@ -48,43 +47,59 @@ def solve(filename):
                 else:
                     memo[i][j] = stone_grid[i][j] + memo[i - 1][j] + memo[i][j - 1] - memo[i - 1][j - 1]
 
-        #for i in memo:
-            #print(i)
         # Handle queries
         for _ in range(q):
 
             query = int(f.readline().strip())
             best_count = 0
-            best_loc = (0,0)
+            best_loc = (2000,2000)
             #look through each square in count table grid
             #figure out what the length sides of the square are
-            for r in range(len(memo)):
-                for c in range(len(memo[r])):
+            for j in range(len(memo)):
+                for i in range(len(memo[j])):
                     #compute desired square
-                    total_square = memo[r][c]
-                    if r >= query*2-1:
-                        left_rect = memo[r-query*2-1][c]
+                    
+                    max_j = min(len(memo)-1,j+query)
+                    max_i = min(len(memo[j])-1, i+query)
+                    
+                    total_square = memo[max_i][max_j]
+                   
+                    min_j = max(j-query,0)
+                    min_i = max(i-query, 0)
+                    if min_i == 0:
+                        bottom_rect = 0
                     else:
+                        bottom_rect = memo[min_i-1][max_j]
+                    
+                    if min_j == 0:
                         left_rect = 0
-                    if c >= query*2-1:
-                        right_rect = memo[r][c-query*2-1]
                     else:
-                        right_rect = 0
-                    if r >= query*2-1 and c >= query*2-1:
-                        smaller_square = memo[r-query*2-1][c-query*2-1]
-                    else:
+                        left_rect = memo[max_i][min_j-1]
+                    
+                    if min_j == 0 or min_i == 0:
                         smaller_square = 0
-                    #print(str(total_square)+" "+str(left_rect)+" "+str(right_rect)+" "+str(smaller_square))
-                    #replace values if larger count found
-                    if best_count < (total_square-right_rect-left_rect+smaller_square):
-                        best_count = (total_square-right_rect-left_rect+smaller_square)
-                        #need to translate back to (r,c)
-                        r_translated = r-i_offset-query
-                        c_translated = c-j_offset-query
-                        y = abs((r_translated+c_translated)//2)
-                        x = abs((r_translated-c_translated)//-2)
-                        #print(str(total_square)+" "+str(left_rect)+" "+str(right_rect)+" "+str(smaller_square))
-                        best_loc = (x,y)
+                    else:
+                        smaller_square = memo[min_i-1][min_j-1]
+                    
+                    #translate values
+                    j_translated = j-j_offset
+                    i_translated = i-i_offset
+                    c = (j_translated+i_translated)//2
+                    r = (j_translated-i_translated)//2
+
+                    #check if count is larger and point is within parameters
+                    if (j_translated+i_translated)%2 == 0 and (j_translated-i_translated)%2 == 0 and r <= nr and r >= 1 and c <= nc and c >= 1:
+                        if best_count < (total_square-left_rect-bottom_rect+smaller_square):
+                            #need to translate back to (c,r)
+                            best_loc = (c,r)
+                            best_count = (total_square-left_rect-bottom_rect+smaller_square)
+                        
+                        #prioritize smallest index
+                        elif best_count == (total_square-left_rect-bottom_rect+smaller_square):
+                            if r<best_loc[1]:
+                                best_loc = (c,r)
+                            elif r == best_loc[1] and c <best_loc[0]:
+                                best_loc = (c,r)
 
 
                     
