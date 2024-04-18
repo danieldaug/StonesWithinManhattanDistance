@@ -59,13 +59,16 @@ def solve(filename):
                 for i in range(len(memo[j])):
                     #compute desired square
                     
+                    #get max i and j value to use for square
                     max_j = min(len(memo)-1,j+query)
                     max_i = min(len(memo[j])-1, i+query)
                     
                     total_square = memo[max_i][max_j]
                    
+                   #get min i and j value to use for cutting off square
                     min_j = max(j-query,0)
                     min_i = max(i-query, 0)
+                    
                     if min_i == 0:
                         bottom_rect = 0
                     else:
