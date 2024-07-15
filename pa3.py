@@ -4,6 +4,10 @@
 # Description: 
 import math
 def solve(filename):
+    """
+    Solves for the location/intersection with the largest amount of stones nearby 
+    it within a given Manhattan distance
+    """
     f = open (filename)
     case = 0
 
