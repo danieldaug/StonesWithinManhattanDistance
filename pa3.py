@@ -4,10 +4,6 @@
 # Description: 
 import math
 def solve(filename):
-    """
-    TODO: Write your docstring here (and for any other helper functions!)
-    """
-
     f = open (filename)
     case = 0
 
